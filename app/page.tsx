@@ -1,113 +1,174 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
+import { useState } from "react"
+import CustomText from "./components/CustomText"
+import InputWithLabel from "./components/InputWithLabel"
+import CustomButton from "./components/CustomButton"
+import { AiOutlineReload } from 'react-icons/ai'
+import { validateEmail, validatePassword } from './helpers/validator'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const Home = () => {
+  const [show, setShow] = useState(false)
+  const [isLoading, setIsloading] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(true)
+
+  const handleShowPassword = () => {
+    setShow(!show)
+  }
+
+  const handleLogin = () => {
+    setIsloading(true)
+    if (validateEmail(email) && validatePassword(password)){
+      toast.success('Anda masuk sebagai ' + email, { autoClose: 2000 })
+    } else if (validateEmail(email) === false && validatePassword(password)) {
+      toast.error('Format email yang anda masukkan salah', { autoClose: 2000 })
+    } else if (validateEmail(email) && validatePassword(password) === false) {
+      toast.error('Password yang anda masukkan kurang dari 8 karakter', { autoClose: 2000 })
+    } else {
+      toast.error('Email atau password yang anda masukkan salah', { autoClose: 2000 })
+    }
+
+    setTimeout(() => {
+      setIsloading(false)
+    }, 3000)
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      <div className='lg:flex h-screen w-full font-inter'>
+        <ToastContainer/>
+        <div className='hidden lg:block w-3/5 bg-primary h-full'>
+          <div className='bg-white/40 lg:m-20 lg:px-14 lg:pt-20 lg:pb-16 xl:m-32 lx:px-16 xl:pt-24 xl:pb-20 2xl:m-44 2xl:px-[88px] 2xl:pt-[138px] 2xl:pb-[104px]'>
+            <CustomText
+              size='banner'
+              variant='secondary'
+              decoration='semibold'
+              className='lg:leading-[42px] xl:leading-[45px] 2xl:leading-[57.6px]'
+            >
+              Lorem ipsum <br/> dolor si <br/> amet 
+              <span className='text-salt-black block'>consectetur</span>
+            </CustomText>
+            <CustomText
+              size='h3'
+              variant='primary'
+              className='mt-10 lg:w-[300px] 2xl:w-[347px] !leading-[27px]'
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </CustomText>
+          </div>
+        </div>
+        <div className='w-full lg:w-2/5'>
+          <div className='mt-[83px] lg:mx-6 lg:mt-16 xl:mx-16 xl:mt-28 2xl:mx-32 2xl:mt-[160px]'>
+            <div className='px-6 lg:px-8'>
+              <CustomText
+                variant='primary'
+                decoration='bold'
+                className='text-[32px] md:text-3xl 2xl:text-[32px]'
+              >
+                Hello
+              </CustomText>
+              <CustomText
+                size='h3'
+                variant='primary'
+              >
+                Enter your email and password to login.
+              </CustomText>
+            </div>
+            <div className='mt-12 px-6 block lg:hidden'>
+              <CustomText
+                size='h1'
+                variant='primary'
+                decoration='semibold'
+              >
+                Login
+              </CustomText>
+            </div>
+            <div className='mt-6 lg:mt-[80px] px-6 lg:px-8 space-y-6'>
+              <InputWithLabel
+                label='Email'
+                type='text'
+                placeholder='Email'
+                onChange={setEmail}
+              />
+              <InputWithLabel
+                label='Password'
+                type='password'
+                placeholder='Password'
+                onChange={setPassword}
+                showPassword={show}
+                handleShowPassword={handleShowPassword}
+              />
+
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center space-x-2'>
+                  <input
+                    type='checkbox'
+                    checked={remember}
+                    onClick={() => setRemember(!remember)}
+                    className='accent-primary'
+                  />
+                  <span className='block text-sm 2xl:text-base'>Remember me</span>
+                </div>
+                <span className='block underline text-sm 2xl:text-base'>Forgot password?</span>
+              </div>
+
+              <div className='grid grid-cols-2 gap-6'>
+                <CustomButton
+                  variant={isLoading ? 'disabled' : 'primary'}
+                  disabled={isLoading}
+                  onClick={() => handleLogin()}
+                  type='submit'
+                  className='w-full py-2 px-4 rounded-lg font-semibold text-sm 2xl:text-base flex justify-center items-center'
+                >
+                  { isLoading && <AiOutlineReload size={20} className='mr-2 animate-spin' /> }
+                  { isLoading ? 'Please Wait' : 'Login' }
+                </CustomButton>
+                <CustomButton
+                  variant='outline-black'
+                  className='w-full py-2 px-4 rounded-lg font-semibold text-sm 2xl:text-base'
+                >
+                  Sign Up
+                </CustomButton>
+              </div>
+
+              <div className='pt-6'>
+                <CustomText
+                  size='h5'
+                  className='text-center'
+                >
+                  Or, login with
+                </CustomText>
+                <div className='mt-4 grid grid-cols-3 gap-4'>
+                  <CustomButton
+                    variant='outline-secondary'
+                    className='w-full py-2 px-4 rounded-lg font-medium text-xs 2xl:text-sm'
+                  >
+                    Facebook
+                  </CustomButton>
+                  <CustomButton
+                    variant='outline-secondary'
+                    className='w-full py-2 px-4 rounded-lg font-medium text-xs 2xl:text-sm'
+                  >
+                    Linked In
+                  </CustomButton>
+                  <CustomButton
+                    variant='outline-secondary'
+                    className='w-full py-2 px-4 rounded-lg font-medium text-xs 2xl:text-sm'
+                  >
+                    Google
+                  </CustomButton>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   )
 }
+
+export default Home
